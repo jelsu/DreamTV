@@ -1,4 +1,4 @@
-package com.teaching.jelus.dreamtv.anctivity;
+package com.teaching.jelus.dreamtv.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,19 +9,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.teaching.jelus.dreamtv.MyApp;
 import com.teaching.jelus.dreamtv.R;
 import com.teaching.jelus.dreamtv.fragment.MainActivityFragment;
-import com.teaching.jelus.dreamtv.task.ReceivingData;
-
-import org.json.JSONObject;
-
-import java.net.URL;
-import java.util.concurrent.ExecutorService;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = MainActivity.class.getSimpleName();
-    private ExecutorService mPool;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        mPool = MyApp.getPool();
         replaceFragment(new MainActivityFragment(), MainActivityFragment.TAG, false);
-        receiveData();
     }
 
     @Override
@@ -66,20 +56,5 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
         fragmentManager.executePendingTransactions();
 
-    }
-
-    private void receiveData() {
-        mPool.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = ReceivingData.getUrl();
-                    String str = ReceivingData.urlToStr(url);
-                    JSONObject jsonObject = ReceivingData.strToJson(str);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 }

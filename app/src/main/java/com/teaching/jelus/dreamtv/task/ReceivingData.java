@@ -1,6 +1,8 @@
 package com.teaching.jelus.dreamtv.task;
 
-import android.util.Log;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.teaching.jelus.dreamtv.CompositeUrl;
+import com.teaching.jelus.dreamtv.pojo.TvList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,18 +19,22 @@ public class ReceivingData {
     public static final String TAG = ReceivingData.class.getSimpleName();
 
     public static URL getUrl() throws MalformedURLException {
-        final String BEGINNING_URL = "https://api.themoviedb.org/3/";
-        final String APP_KEY = "3e8a943eab2f635a03f49729a887d467";
-        String requestType = "discover/tv";
-        StringBuilder compositeUrl = new StringBuilder(BEGINNING_URL + requestType);
-        compositeUrl.append("?api_key=" + APP_KEY);
-        compositeUrl.append("&sort_by=popularity.desc");
-        compositeUrl.append("&language=ru");
-        Log.d(TAG, "Composite URL: " + compositeUrl.toString());
-        return new URL(compositeUrl.toString());
+        CompositeUrl mostPopularTvUrl = new CompositeUrl.CompositeUrlBuilder()
+                .selectMostPopularRequestType()
+                .selectByPopularitySortType()
+                .selectRuLanguage()
+                .build();
+        return mostPopularTvUrl.getCompositeURL();
     }
 
-    public static String urlToStr(URL url) throws IOException {
+    public static TvList getJsonStrViaJackson() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        TvList tvList = new TvList();
+        tvList = objectMapper.readValue(getUrl(), TvList.class);
+        return tvList;
+    }
+
+    public static String obtainStrDataOnUrl(URL url) throws IOException {
         HttpURLConnection urlConnection;
         BufferedReader reader;
         InputStream inputStream;
